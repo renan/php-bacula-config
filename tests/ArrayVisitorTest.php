@@ -22,7 +22,7 @@ Fileset {
     Name = "First Fileset"
     Include {
         Options {
-            compression="GZIP" # Yay for compression
+            compression=GZIP # Yay for compression
         }
         File = "/path/to/folder"
     }
@@ -36,7 +36,7 @@ Fileset {
 Fileset {
     Name = "Second Fileset"
     Include {
-        Options { signature = SHA1; onfs=no; fstype=ext2 }
+        Options { signature=SHA1; onfs=no; fstype=ext2 }
         File = "/"
     }
 }
