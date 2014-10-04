@@ -1,0 +1,22 @@
+language: php
+
+php:
+  - 5.4
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.4
+      env: PHPCS=1
+
+before_script:
+  - composer self-update
+  - composer install
+
+script:
+  - if [[ "$PHPCS" != "1" ]]; then mkdir -p build/logs; fi
+  - if [[ "$PHPCS" != "1" ]]; then ./vendor/bin/phpunit; fi
+  - if [[ "$PHPCS" == "1" ]]; then ./vendor/bin/phpcs --standard=PSR2 -np src/ tests/; fi
+
+after_script:
+  - if [[ "$PHPCS" != "1" ]]; then ./vendor/bin/coveralls; fi
