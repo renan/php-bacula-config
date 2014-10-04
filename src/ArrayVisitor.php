@@ -20,8 +20,8 @@ class ArrayVisitor implements Visitor\Visit
             case '#resource':
                 $children = $this->visitChildren($element, $handle, $eldnah);
                 return [
-                    'type'    => strtolower(array_shift($children)),
-                    'options' => $children,
+                    'type'     => strtolower(array_shift($children)),
+                    'resource' => $children,
                 ];
 
             case '#pair':

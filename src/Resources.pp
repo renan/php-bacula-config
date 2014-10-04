@@ -25,7 +25,7 @@ structure:
     pair() | resource() | <comment>
 
 #pair:
-    string() ::equal:: string()
+    string() ::equal:: string() ::semicolon::?
 
 #resource:
     <identifier> ::brace_:: repetition() ::_brace::

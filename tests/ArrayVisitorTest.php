@@ -35,12 +35,16 @@ Fileset {
 
 Fileset {
     Name = "Second Fileset"
+    Include {
+        Options { signature = SHA1; onfs=no; fstype=ext2 }
+        File = "/"
+    }
 }
 CONFIG;
         $expected = [
             [
                 'type' => 'pool',
-                'options' => [
+                'resource' => [
                     [
                         'key' => 'Name',
                         'value' => 'Default'
@@ -54,17 +58,17 @@ CONFIG;
             '# My best fileset yet',
             [
                 'type' => 'fileset',
-                'options' => [
+                'resource' => [
                     [
                         'key' => 'Name',
                         'value' => 'First Fileset'
                     ],
                     [
                         'type' => 'include',
-                        'options' => [
+                        'resource' => [
                             [
                                 'type' => 'options',
-                                'options' => [
+                                'resource' => [
                                     [
                                         'key' => 'compression',
                                         'value' => 'GZIP'
@@ -81,7 +85,7 @@ CONFIG;
                     '# This folder is too big, a separate fileset should be used',
                     [
                         'type' => 'exclude',
-                        'options' => [
+                        'resource' => [
                             [
                                 'key' => 'File',
                                 'value' => '/folder/too/big'
@@ -92,10 +96,36 @@ CONFIG;
             ],
             [
                 'type' => 'fileset',
-                'options' => [
+                'resource' => [
                     [
                         'key' => 'Name',
                         'value' => 'Second Fileset'
+                    ],
+                    [
+                        'type' => 'include',
+                        'resource' => [
+                            [
+                                'type' => 'options',
+                                'resource' => [
+                                    [
+                                        'key' => 'signature',
+                                        'value' => 'SHA1'
+                                    ],
+                                    [
+                                        'key' => 'onfs',
+                                        'value' => 'no'
+                                    ],
+                                    [
+                                        'key' => 'fstype',
+                                        'value' => 'ext2'
+                                    ]
+                                ]
+                            ],
+                            [
+                                'key' => 'File',
+                                'value' => '/'
+                            ]
+                        ]
                     ]
                 ]
             ]
@@ -106,6 +136,6 @@ CONFIG;
         $ast = $compiler->parse($config);
         $result = $visitor->visit($ast);
 
-        $this->assertEquals($result, $expected);
+        $this->assertEquals($expected, $result);
     }
 }
