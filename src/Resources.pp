@@ -4,28 +4,28 @@
 %token  string:escaped  \\(["\\/bfnrt]|u[0-9a-fA-F]{4})
 %token  string:string   [^"\\]+
 %token  string:_quote   "                             -> default
-%token  identifier      [a-zA-Z_][a-zA-Z0-9_]*
+%token  identifier      \w+( \w+)*
+%token  comment         #[^\n]+
+
 %token  brace_          {
 %token _brace           }
 %token  equal           =
 %token  semicolon       ;
 
-value:
-    root() | string() | block()
+#root:
+    repetition()
+
+repetition:
+    ( structure() )*
 
 string:
-    ::quote_::
-    <string>
-    ::_quote::
+    <identifier> | ::quote_:: <string> ::_quote::
 
-identifier:
-    <identifier>
-
-#root:
-    block() ( block() )*
-
-#block:
-    identifier() ::brace_:: pair() ( ::semicolon:: pair() )* ::_brace::
+structure:
+    pair() | resource() | <comment>
 
 #pair:
-    identifier() ::equal:: value()
+    string() ::equal:: string()
+
+#resource:
+    <identifier> ::brace_:: repetition() ::_brace::

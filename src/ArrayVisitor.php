@@ -15,18 +15,28 @@ class ArrayVisitor implements Visitor\Visit
                 return $value['value'];
 
             case '#root':
-                return $this->root($element, $handle, $eldnah);
+                return $this->visitChildren($element, $handle, $eldnah);
 
-            case '#block':
-                return $this->block($element, $handle, $eldnah);
+            case '#resource':
+                $children = $this->visitChildren($element, $handle, $eldnah);
+                return [
+                    'type'    => strtolower(array_shift($children)),
+                    'options' => $children,
+                ];
 
             case '#pair':
-                return $this->pair($element, $handle, $eldnah);
+                $children = $this->visitChildren($element, $handle, $eldnah);
+                return [
+                    'key'   => $children[0],
+                    'value' => $children[1],
+                ];
+
+            default:
+                throw new UnexpectedValueException(sprintf('I cannot visit %s yet.', $id));
         }
-        throw new UnexpectedValueException(sprintf('I cannot visit %s yet.', $id));
     }
 
-    protected function root(Visitor\Element $element, &$handle, $eldnah)
+    protected function visitChildren(Visitor\Element $element, &$handle, $eldnah)
     {
         $children = $element->getChildren();
         $out = [];
@@ -34,29 +44,5 @@ class ArrayVisitor implements Visitor\Visit
             $out[] = $child->accept($this, $handle, $eldnah);
         }
         return $out;
-    }
-
-    protected function block(Visitor\Element $element, &$handle, $eldnah)
-    {
-        $children = $element->getChildren();
-        $out = [];
-        foreach ($children as $i => $child) {
-            if ($i === 0) {
-                $name = $child->accept($this, $handle, $eldnah);
-            } else {
-                list($key, $value) = $child->accept($this, $handle, $eldnah);
-                $out[$key][] = $value;
-            }
-        }
-        return [$name, $out];
-    }
-
-    protected function pair(Visitor\Element $element, &$handle, $eldnah)
-    {
-        $children = $element->getChildren();
-        return [
-            $children[0]->accept($this, $handle, $eldnah),
-            $children[1]->accept($this, $handle, $eldnah),
-        ];
     }
 }
